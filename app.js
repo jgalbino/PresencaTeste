@@ -1,5 +1,5 @@
 // Configuração do Firebase
-const firebaseConfig = {
+const Config = {
     apiKey: "AIzaSyDayv8_M_jNUwigisneCBxu_O1eRjTO7B8",
     authDomain: "presencateste-77a47.firebaseapp.com",
     projectId: "presencateste-77a47",
@@ -10,7 +10,7 @@ const firebaseConfig = {
 };
 
 // Inicializar o Firebase
-const app = firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(Config);
 const db = firebase.firestore();
 
 // Criar Aula
