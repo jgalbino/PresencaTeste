@@ -23,13 +23,13 @@ const gerarRelatorio = async () => {
         return;
     }
 
-    relatorioTabela.innerHTML = ''; // Limpar tabela antes de carregar
+    relatorioTabela.innerHTML = ''; // Limpar a tabela antes de carregar
 
     try {
         const querySnapshot = await db.collection("Presenças").get();
         const dados = querySnapshot.docs.map((doc) => doc.data());
 
-        // Agrupar dados conforme o critério selecionado
+        // Agrupar conforme o critério selecionado
         const agrupado = {};
 
         dados.forEach((item) => {
@@ -42,7 +42,7 @@ const gerarRelatorio = async () => {
             agrupado[chave].push(item);
         });
 
-        // Criar a tabela para exibir o relatório
+        // Criar a tabela para exibição do relatório
         const table = document.createElement("table");
         table.className = "table table-striped";
 
@@ -73,11 +73,52 @@ const gerarRelatorio = async () => {
 
         table.appendChild(tbody);
         relatorioTabela.appendChild(table);
+
+        return agrupado; // Retorna para usar na função de baixar como TXT
     } catch (error) {
-        console.error("Erro ao gerar relatório de faltas:", error);
+        console.error("Erro ao gerar relatório:", error);
     }
 };
 
-// Vincular evento para gerar relatório
+// Função para baixar relatório como arquivo de texto
+const baixarRelatorioTXT = async () => {
+    const agrupado = await gerarRelatorio();
+
+    if (!agrupado) {
+        console.error("Não foi possível gerar o relatório para baixar.");
+        return;
+    }
+
+    // Criar o conteúdo do arquivo TXT
+    let txtContent = "Relatório de Faltas:\n\n";
+
+    for (const chave in agrupado) {
+        txtContent += `Agrupamento: ${chave}\n`;
+        txtContent += "Detalhes:\n";
+
+        agrupado[chave].forEach((item) => {
+            txtContent += `  - ${item.presentes.join(", ")}\n`;
+        });
+
+        txtContent += "\n";
+    }
+
+    // Criar um Blob para o arquivo TXT
+    const blob = new Blob([txtContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    // Criar um link para download do arquivo TXT
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "relatorio_faltas.txt";
+    a.click(); // Clicar para iniciar o download
+
+    URL.revokeObjectURL(url); // Limpar o objeto após download
+};
+
+// Vincular evento para gerar o relatório
 document.getElementById("gerar-relatorio").addEventListener("click", gerarRelatorio);
+
+// Vincular evento para baixar relatório como TXT
+document.getElementById("baixar-txt").addEventListener("click", baixarRelatorioTXT);
 
