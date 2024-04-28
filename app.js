@@ -13,23 +13,27 @@ var config = {
 const app = firebase.initializeApp(config);
 const db = firebase.firestore();
 
-// Função para carregar turmas no dropdown
-const loadTurmas = () => {
-    db.collection("Turmas").get().then((querySnapshot) => {
+// Função para carregar turmas
+const loadTurmas = async () => {
+    try {
+        // Obter todos os documentos da coleção "Turmas"
+        const querySnapshot = await db.collection("Turmas").get();
+
+        // Mapeie para obter o ID do documento e o campo "nome"
         const turmas = querySnapshot.docs.map((doc) => {
             return { id: doc.id, nome: doc.data().nome };
         });
 
-        // Preencher os dropdowns
+        // Preencher o dropdown com as turmas
         preencherDropdown("select-class-turma", turmas);
         preencherDropdown("select-presence-turma", turmas);
         preencherDropdown("select-view-turma", turmas);
-    }).catch((error) => {
+    } catch (error) {
         console.error("Erro ao carregar turmas:", error);
-    });
+    }
 };
 
-// Função para preencher o dropdown
+// Função para preencher um dropdown
 const preencherDropdown = (dropdownId, items) => {
     const dropdown = document.getElementById(dropdownId);
 
@@ -38,13 +42,13 @@ const preencherDropdown = (dropdownId, items) => {
 
     items.forEach((item) => {
         const option = document.createElement("option");
-        option.value = item.id; // Usar ID da turma como valor
-        option.textContent = item.nome; // Mostrar nome da turma no dropdown
+        option.value = item.id; // Usar ID do documento como valor
+        option.textContent = item.nome; // Mostrar nome no dropdown
         dropdown.appendChild(option);
     });
 };
 
-// Carregar turmas ao iniciar a página
+// Carregar turmas ao carregar a página
 document.addEventListener("DOMContentLoaded", loadTurmas);
 
 // Função para criar aula
