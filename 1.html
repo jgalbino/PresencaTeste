@@ -2,14 +2,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Presença Escolar Escola Octógono</title>
+    <title>Registro de Presença Escolar | Escola Octógono</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js"></script>
-    <script type="module" src="./app1.js"></script>
-    <!-- Estilos para barra lateral estendida sem espaço extra -->
+
+    <!-- Estilos para barra lateral estendida sem espaço extra e ajuste de fonte -->
     <style>
         body, html {
             margin: 0;
@@ -23,36 +23,65 @@
 
         .bg-dark-gray {
             background-color: #343a40; /* Cinza escuro */
-            color: white; /* Para manter contraste de texto */
+            color: white; /* Para garantir contraste de texto */
+        }
+
+        .accessible-font {
+            font-size: 16px; /* Tamanho padrão da fonte */
+        }
+
+        .btn-adjust-font {
+            margin: 0 5px; /* Pequeno espaço entre botões */
         }
     </style>
+
+    <!-- Script para ajustar a fonte e lembrar a preferência do usuário -->
+    <script>
+        const ajustarFonte = (delta) => {
+            const body = document.body;
+            const fontSize = parseFloat(getComputedStyle(body).fontSize);
+            const novoTamanho = fontSize + delta;
+            body.style.fontSize = `${novoTamanho}px`;
+            localStorage.setItem("tamanhoFonte", novoTamanho); // Salvar preferência do usuário
+        };
+
+        const aplicarFonteSalva = () => {
+            const tamanhoSalvo = localStorage.getItem("tamanhoFonte");
+            if (tamanhoSalvo) {
+                document.body.style.fontSize = `${tamanhoSalvo}px`;
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", aplicarFonteSalva);
+    </script>
 </head>
-<body>
+<body class="accessible-font"> <!-- Aplicar classe de fonte ajustável -->
 
 <!-- Cabeçalho do site com fundo cinza escuro -->
 <nav class="navbar navbar-expand-lg bg-dark-gray">
-    <a class="navbar-brand text-white" href="#">Sistema de Presença Escola Octógono</a>
+    <a class="navbar-brand text-white" href="#">Sistema de Presença | Escola Octógono</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
+            <!-- Botões para ajustar fonte -->
             <li class="nav-item">
-                <a class="nav-link text-white" href="#">Página Inicial</a>
+                <button class="btn btn-light btn-adjust-font" onclick="ajustarFonte(2)">Aumentar Fonte</button>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white" href="#">Sobre</a>
+                <button class="btn btn-light btn-adjust-font" onclick="ajustarFonte(-2)">Diminuir Fonte</button>
             </li>
             <!-- Botão de Logout em Vermelho -->
             <li class="nav-item">
-                <a class="nav-link text-danger" href="#">Logout</a> <!-- Cor vermelha para destaque -->
+                <a class="nav-link text-danger" href="#">Logout</a>
             </li>
         </ul>
     </div>
 </nav>
 
 <!-- Layout de duas colunas para barra lateral sem espaço extra à esquerda -->
-<div class="container-fluid full-height d-flex flex-row p-0"> <!-- Sem padding na esquerda -->
+<div class="container-fluid full-height d-flex flex-row p-0">
     <!-- Barra lateral para menu com fundo cinza escuro -->
     <div class="col-md-3 bg-dark-gray sidebar d-flex flex-column p-0"> <!-- Sem padding -->
         <ul class="nav flex-column">
@@ -74,14 +103,14 @@
             <form id="register-view-presence-form">
                 <div class="form-group">
                     <label para="select-turma">Turma:</label>
-                    <select id="select-turma" class="form-control" required>
+                    <select id="select-turma" class="form-control" required tabindex="0">
                         <option value="" disabled selected>Selecione uma turma</option>
                         <!-- Turmas serão carregadas aqui -->
                     </select>
                 </div>
                 <div class="form-group">
                     <label para="select-date">Data:</label>
-                    <input type="date" id="select-date" class="form-control" required>
+                    <input type="date" id="select-date" class="form-control" required tabindex="1">
                 </div>
                 <button type="button" class="btn btn-secondary" id="load-presences">Carregar Presença</button>
                 <div class="mt-3" id="presence-table">
@@ -90,16 +119,14 @@
                 <button type="submit" class="btn btn-primary">Registrar/Salvar Presença</button>
             </form>
         </section>
-
-        <!-- Adicione outras seções conforme necessário -->
     </div>
 </div>
 
-<!-- Bibliotecas JS para Bootstrap e outras funções -->
+<!-- Bibliotecas JS para Bootstrap -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 </body>
 </html>
+
 
