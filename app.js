@@ -13,13 +13,13 @@ var config = {
 const app = firebase.initializeApp(config);
 const db = firebase.firestore();
 
-// Criar Aula
-document.getElementById("create-class-form").addEventListener("submit", (event) => {
-    event.preventDefault();
+// Função para criar aula
+const createClass = (event) => {
+    event.preventDefault(); // Prevenir comportamento padrão do formulário
+
     const turma = document.getElementById("class-turma").value;
     const date = document.getElementById("class-date").value;
 
-    // Adicionar uma nova aula ao Firestore
     db.collection("Aulas").add({
         turma,
         date
@@ -28,17 +28,20 @@ document.getElementById("create-class-form").addEventListener("submit", (event) 
     }).catch((error) => {
         console.error("Erro ao criar aula:", error);
     });
-});
+};
 
-// Carregar Alunos e Registrar Presença
-document.getElementById("load-students").addEventListener("click", () => {
+// Vincular evento de submissão do formulário de criar aula
+document.getElementById("create-class-form").removeEventListener("submit", createClass);
+document.getElementById("create-class-form").addEventListener("submit", createClass);
+
+// Função para carregar alunos de uma turma
+const loadStudents = () => {
     const turma = document.getElementById("select-turma").value;
     const studentList = document.getElementById("student-list");
 
-    // Limpar lista de alunos existente
+    // Limpar a lista de alunos
     studentList.innerHTML = "";
 
-    // Carregar alunos da turma
     db.collection("Alunos").where("turma", "==", turma).get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             const student = doc.data();
@@ -60,15 +63,19 @@ document.getElementById("load-students").addEventListener("click", () => {
     }).catch((error) => {
         console.error("Erro ao carregar alunos:", error);
     });
-});
+};
 
-// Registrar Presença
-document.getElementById("register-presence-form").addEventListener("submit", (event) => {
-    event.preventDefault();
+// Vincular evento para carregar alunos ao clicar no botão
+document.getElementById("load-students").removeEventListener("click", loadStudents);
+document.getElementById("load-students").addEventListener("click", loadStudents);
+
+// Função para registrar presença
+const registerPresence = (event) => {
+    event.preventDefault(); // Prevenir comportamento padrão do formulário
+
     const turma = document.getElementById("select-turma").value;
     const date = document.getElementById("select-date").value;
 
-    // Criar uma lista de IDs de alunos presentes
     const studentCheckboxes = document.querySelectorAll("#student-list input[type='checkbox']");
     const presentStudentIds = [];
 
@@ -78,7 +85,6 @@ document.getElementById("register-presence-form").addEventListener("submit", (ev
         }
     });
 
-    // Adicionar ou atualizar a lista de presença para a aula específica
     db.collection("Presenças").add({
         turma,
         date,
@@ -88,18 +94,22 @@ document.getElementById("register-presence-form").addEventListener("submit", (ev
     }).catch((error) => {
         console.error("Erro ao registrar presença:", error);
     });
-});
+};
 
-// Visualizar Presença
-document.getElementById("view-presence-form").addEventListener("submit", (event) => {
-    event.preventDefault();
+// Vincular evento para registrar presença ao submeter o formulário
+document.getElementById("register-presence-form").removeEventListener("submit", registerPresence);
+document.getElementById("register-presence-form").addEventListener("submit", registerPresence);
+
+// Função para visualizar presença
+const viewPresence = (event) => {
+    event.preventDefault(); // Prevenir comportamento padrão do formulário
+
     const turma = document.getElementById("view-turma").value;
     const date = document.getElementById("view-date").value;
+
     const presenceList = document.getElementById("presence-list");
+    presenceList.innerHTML = ""; // Limpar lista anterior
 
-    presenceList.innerHTML = "";
-
-    // Procurar presença para uma aula específica
     db.collection("Presenças").where("turma", "==", turma).where("date", "==", date).get().then((querySnapshot) => {
         if (querySnapshot.empty) {
             presenceList.innerText = "Nenhuma presença encontrada para essa aula.";
@@ -109,7 +119,6 @@ document.getElementById("view-presence-form").addEventListener("submit", (event)
         const doc = querySnapshot.docs[0];
         const presentes = doc.data().presentes;
 
-        // Carregar nomes dos alunos presentes
         const promises = presentes.map((studentId) => {
             return db.collection("Alunos").doc(studentId).get();
         });
@@ -122,8 +131,11 @@ document.getElementById("view-presence-form").addEventListener("submit", (event)
                 presenceList.appendChild(p);
             });
         });
-
     }).catch((error) => {
         console.error("Erro ao visualizar presença:", error);
     });
-});
+};
+
+// Vincular evento para visualizar presença ao submeter o formulário
+document.getElementById("view-presence-form").removeEventListener("submit", viewPresence);
+document.getElementById("view-presence-form").addEventListener("submit", viewPresence);
