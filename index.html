@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<script type="module" src="./app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js"></script>
-<script type="module" src="./app.js"></script>
     <meta charset="UTF-8">
     <title>Registro de Presença Escolar</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+    <script src="app.js"></script>
 </head>
 <body>
 
@@ -21,11 +22,14 @@
         <h2>Criar Aula</h2>
         <form id="create-class-form">
             <div class="form-group">
-                <label for="class-turma">Turma:</label>
-                <input type="text" id="class-turma" class="form-control" required>
+                <label for="select-class-turma">Turma:</label>
+                <select id="select-class-turma" class="form-control" required>
+                    <option value="" disabled selected>Selecione uma turma</option>
+                    <!-- Turmas serão carregadas aqui -->
+                </select>
             </div>
             <div class="form-group">
-                <label for="class-date">Data da Aula:</label>
+                <label para="class-date">Data da Aula:</label>
                 <input type="date" id="class-date" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Criar Aula</button>
@@ -39,11 +43,14 @@
         <h2>Registrar Presença</h2>
         <form id="register-presence-form">
             <div class="form-group">
-                <label for="select-turma">Turma:</label>
-                <input type="text" id="select-turma" class="form-control" required>
+                <label para="select-presence-turma">Turma:</label>
+                <select id="select-presence-turma" class="form-control" required>
+                    <option value="" disabled selected>Selecione uma turma</option>
+                    <!-- Turmas serão carregadas aqui -->
+                </select>
             </div>
             <div class="form-group">
-                <label for="select-date">Data:</label>
+                <label para="select-date">Data:</label>
                 <input type="date" id="select-date" class="form-control" required>
             </div>
             <button type="button" id="load-students" class="btn btn-secondary">Carregar Alunos</button>
@@ -61,11 +68,14 @@
         <h2>Visualizar Presença</h2>
         <form id="view-presence-form">
             <div class="form-group">
-                <label for="view-turma">Turma:</label>
-                <input type="text" id="view-turma" class="form-control" required>
+                <label para="select-view-turma">Turma:</label>
+                <select id="select-view-turma" class="form-control" required>
+                    <option value="" disabled selected>Selecione uma turma</option>
+                    <!-- Turmas serão carregadas aqui -->
+                </select>
             </div>
             <div class="form-group">
-                <label for="view-date">Data:</label>
+                <label para="view-date">Data:</label>
                 <input type="date" id="view-date" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Visualizar</button>
@@ -77,8 +87,7 @@
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+<!-- Código JavaScript para Carregar Turmas e Interagir com Firestore -->
 <script src="app.js"></script>
 
 </body>
