@@ -13,18 +13,40 @@ var config = {
 const app = firebase.initializeApp(config);
 const db = firebase.firestore();
 
+// Função para preencher um dropdown
+const preencherDropdown = (dropdownId, items) => {
+    const dropdown = document.getElementById(dropdownId);
+
+    if (!dropdown) {
+        console.error(`Dropdown com ID '${dropdownId}' não encontrado.`);
+        return;
+    }
+
+    // Limpar dropdown antes de adicionar novos itens
+    dropdown.innerHTML = '<option value="" disabled selected>Selecione uma turma</option>';
+
+    items.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.nome;
+        dropdown.appendChild(option);
+    });
+};
+
 // Função para carregar turmas
 const loadTurmas = async () => {
     try {
-        // Obter todos os documentos da coleção "Turmas"
         const querySnapshot = await db.collection("Turmas").get();
 
-        // Mapeie para obter o ID do documento e o campo "nome"
+        if (querySnapshot.empty) {
+            console.error("Nenhuma turma encontrada.");
+            return;
+        }
+
         const turmas = querySnapshot.docs.map((doc) => {
             return { id: doc.id, nome: doc.data().nome };
         });
 
-        // Preencher o dropdown com as turmas
         preencherDropdown("select-class-turma", turmas);
         preencherDropdown("select-presence-turma", turmas);
         preencherDropdown("select-view-turma", turmas);
@@ -33,22 +55,7 @@ const loadTurmas = async () => {
     }
 };
 
-// Função para preencher um dropdown
-const preencherDropdown = (dropdownId, items) => {
-    const dropdown = document.getElementById(dropdownId);
-
-    // Limpar dropdown antes de adicionar novos itens
-    dropdown.innerHTML = '<option value="" disabled selected>Selecione uma turma</option>';
-
-    items.forEach((item) => {
-        const option = document.createElement("option");
-        option.value = item.id; // Usar ID do documento como valor
-        option.textContent = item.nome; // Mostrar nome no dropdown
-        dropdown.appendChild(option);
-    });
-};
-
-// Carregar turmas ao carregar a página
+// Carregar turmas ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadTurmas);
 
 // Função para criar aula
@@ -57,6 +64,11 @@ const createClass = (event) => {
 
     const turmaId = document.getElementById("select-class-turma").value;
     const date = document.getElementById("class-date").value;
+
+    if (!turmaId) {
+        console.error("Nenhuma turma selecionada para criar aula.");
+        return;
+    }
 
     db.collection("Aulas").add({
         turma: turmaId,
@@ -76,7 +88,12 @@ const loadStudents = () => {
     const turmaId = document.getElementById("select-presence-turma").value;
     const studentList = document.getElementById("student-list");
 
-    studentList.innerHTML = ""; // Limpar antes de carregar
+    if (!turmaId || !studentList) {
+        console.error("Erro ao carregar alunos: Turma não selecionada ou lista de alunos não encontrada.");
+        return;
+    }
+
+    studentList.innerHTML = "";
 
     db.collection("Alunos").where("turma", "==", turmaId).get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -111,6 +128,11 @@ const registerPresence = (event) => {
     const turmaId = document.getElementById("select-presence-turma").value;
     const date = document.getElementById("select-date").value;
 
+    if (!turmaId) {
+        console.error("Erro ao registrar presença: Turma não selecionada.");
+        return;
+    }
+
     const studentCheckboxes = document.querySelectorAll("#student-list input[type='checkbox']");
     const presentStudentIds = [];
 
@@ -142,7 +164,13 @@ const viewPresence = (event) => {
     const date = document.getElementById("view-date").value;
 
     const presenceList = document.getElementById("presence-list");
-    presenceList.innerHTML = ""; // Limpar antes de carregar
+
+    if (!turmaId || !presenceList) {
+        console.error("Erro ao visualizar presença: Turma ou lista de presença não encontrada.");
+        return;
+    }
+
+    presenceList.innerHTML = ""; // Limpar lista antes de carregar
 
     db.collection("Presenças").where("turma", "==", turmaId).where("date", "==", date).get().then((querySnapshot) => {
         if (querySnapshot.empty) {
@@ -157,7 +185,12 @@ const viewPresence = (event) => {
         });
 
         Promise.all(promises).then((results) => {
-            results.foram por aí.
+            results.forEach((studentDoc) => {
+                const student = studentDoc.data();
+                const p = document.createElement("p");
+                p.innerText = student.nome;
+                presenceList.appendChild(p);
+            });
         });
     }).catch((error) => {
         console.error("Erro ao visualizar presença:", error);
