@@ -10,7 +10,6 @@ var config = {
 };
 
 // Inicializar o Firebase
-firebase.initializeApp(config);
 const app = firebase.initializeApp(config);
 const db = firebase.firestore();
 
